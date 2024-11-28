@@ -6,8 +6,13 @@
 #include <windows.h>
 #include <sstream>
 
+struct Description
+{
+	std::string habitat;
+	std::string phoneNumber;
+};
 
-using dictionary = std::vector<std::pair<std::string, std::string>>;
+using dictionary = std::vector<std::pair<std::string, Description>>;
 
 static void isCapital(const char x, int& y)
 {
@@ -26,7 +31,7 @@ static void addToGuide(dictionary& guide)
 
 	std::string str;
 	std::string key;
-	std::string description;
+	Description description;
 	bool test = FALSE;
 	int number;
 
@@ -40,7 +45,8 @@ static void addToGuide(dictionary& guide)
 
 	while (objects) {
 		key = "";
-		description = "";
+		description.habitat = "";
+		description.phoneNumber = "";
 		number = 0;
 		bool test = FALSE;
 
@@ -58,8 +64,12 @@ static void addToGuide(dictionary& guide)
 				test = TRUE;
 			}
 
+			if (word[0] == '8') {
+				description.phoneNumber += word;
+			}
+
 			if (test == TRUE) {
-				description += word + " ";
+				description.habitat += word + " ";
 			}
 			else {
 				key += word + " ";
@@ -67,7 +77,8 @@ static void addToGuide(dictionary& guide)
 		}
 
 		key.pop_back();
-		description.pop_back();
+		description.habitat.pop_back();
+		
 		guide.push_back(std::make_pair(key, description));
 		objects--;
 	}
@@ -77,16 +88,20 @@ static void addToGuide(dictionary& guide)
 
 static void showToGuide(const dictionary& guide)
 {
-	std::string str;
+	std::string title;
+	std::string place;
 	int n = 0;
 
-	std::getline(std::cin, str);
-	
-	for (std::pair<std::string, std::string> fragment : guide) {
-		if (fragment.first == str)
-		{
+	std::cin >> title;
+	std::cin >> place;
+
+	for (int i = 0; i < guide.size(); i++) {
+		if (guide[i].first == title) {
 			n++;
-			std::cout << "Обитает в => " << fragment.second << std::endl;
+			if (guide[i].second.habitat == place) {
+				std::cout << "Телефон базы: " << guide[i].second.phoneNumber << std::endl;
+				break;
+			}
 		}
 	}
 
