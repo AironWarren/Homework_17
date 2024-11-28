@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 #include <utility>
 #include <string>
 #include <windows.h>
@@ -8,11 +9,17 @@
 
 struct Description
 {
+	std::string title;
 	std::string habitat;
 	std::string phoneNumber;
 };
 
-using dictionary = std::map<std::string, Description>;
+inline bool operator<(const Description& lhs, const Description& rhs)
+{
+	return lhs.title < rhs.title;
+}
+
+using dictionary = std::set<Description>;
 
 static void isCapital(const char x, int& y)
 {
@@ -76,10 +83,11 @@ static void addToGuide(dictionary& guide)
 			}
 		}
 
-		key.pop_back();
+		description.title.pop_back();
 		description.habitat.pop_back();
 		
-		guide.insert({ key, description });
+		guide.insert(description);
+		
 		objects--;
 	}
 	
@@ -95,16 +103,20 @@ static void showToGuide(const dictionary& guide)
 	std::cin >> title;
 	std::cin >> place;
 
-	if (guide.find(title) == guide.end()) {
-		std::cout << "Данной рыбы нет в справочнике\n";
+	for (Description element : guide) {
+		if (element.title == title) {
+			n++;
+			if (element.habitat == place) {
+				std::cout << "Телефон базы: " << element.phoneNumber << std::endl;
+				break;
+			} else {
+				std::cout << "Данной рыбы нет в это месте\n";
+			}
+		}
 	}
-	else {
-		if (guide.at(title).habitat == place) {
-			std::cout << "Телефон базы: " << guide.at(title).phoneNumber << std::endl;
-		}
-		else {
-			std::cout << "Данной рыбы нет в это месте\n";
-		}
+
+	if (n == 0) {
+		std::cout << "Данной рыбы нет в справочнике\n";
 	}
 
 	std::cout << "______Поиск законен______\n";
@@ -117,7 +129,11 @@ static void delToGuide(dictionary& guide)
 
 	std::getline(std::cin, str);
 	
-	guide.erase(str);
+	for (Description element : guide) {
+		if (element.title == str) {
+			guide.erase(element);
+		}
+	}
 
 	std::cout << "______Данные удалены______\n";
 }
