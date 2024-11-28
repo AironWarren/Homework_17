@@ -12,7 +12,7 @@ struct Description
 	std::string phoneNumber;
 };
 
-using dictionary = std::vector<std::pair<std::string, Description>>;
+using dictionary = std::map<std::string, Description>;
 
 static void isCapital(const char x, int& y)
 {
@@ -79,7 +79,7 @@ static void addToGuide(dictionary& guide)
 		key.pop_back();
 		description.habitat.pop_back();
 		
-		guide.push_back(std::make_pair(key, description));
+		guide.insert({ key, description });
 		objects--;
 	}
 	
@@ -95,18 +95,16 @@ static void showToGuide(const dictionary& guide)
 	std::cin >> title;
 	std::cin >> place;
 
-	for (int i = 0; i < guide.size(); i++) {
-		if (guide[i].first == title) {
-			n++;
-			if (guide[i].second.habitat == place) {
-				std::cout << "Телефон базы: " << guide[i].second.phoneNumber << std::endl;
-				break;
-			}
-		}
-	}
-
-	if (n == 0) {
+	if (guide.find(title) == guide.end()) {
 		std::cout << "Данной рыбы нет в справочнике\n";
+	}
+	else {
+		if (guide.at(title).habitat == place) {
+			std::cout << "Телефон базы: " << guide.at(title).phoneNumber << std::endl;
+		}
+		else {
+			std::cout << "Данной рыбы нет в это месте\n";
+		}
 	}
 
 	std::cout << "______Поиск законен______\n";
@@ -118,12 +116,8 @@ static void delToGuide(dictionary& guide)
 	int n = 0;
 
 	std::getline(std::cin, str);
-
-	for (int i = 0; i < guide.size(); i++) {
-		if (guide[i].first == str) {
-			guide.erase(guide.cbegin() + i);
-		}
-	}
+	
+	guide.erase(str);
 
 	std::cout << "______Данные удалены______\n";
 }
@@ -137,8 +131,6 @@ int main()
 
 	dictionary guide;
 	std::string str;
-	
-	guide.reserve(4);
 
 	std::cout << "===Программа справочник по обитателям вод===\n";
 	
